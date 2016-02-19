@@ -14,17 +14,25 @@ app.use(express.static(__dirname + '/droppingallthepins.js'));
 
 var port = process.env.PORT || 3000;
 
-ky.numberOfBusStops( (data) => {
+/*ky.numberOfBusStops( (data, error) => {
+  return data;
   var parsedData = JSON.parse(data);
   console.log(parsedData.data.list[0].lat);
   console.log(parsedData.data.list[0].lon);
-});
+});*/
 
-app.get('/', (res, req) => {
+
+app.get('/', (req, res) => {
   res.sendFile(__dirname, 'index.html', function(error){
     if (error) {
       response.status(404).send('<h1>EPIC FAAAAAAAAAAAAAAAAAAAAIIIIIIIIIIIIIILLLLLLLLLL</h1>');
     }
+  });
+});
+
+app.get('/busStopData', (req, res) => {
+  ky.numberOfBusStops( (data) => {
+    res.send(data);
   });
 });
 

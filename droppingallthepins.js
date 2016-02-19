@@ -2,6 +2,8 @@
 
 var x = document.getElementById("demo");
 
+var busStopLocations = [];
+
 
 function showPosition(position) {
     x.innerHTML = "Latitude: " + position.coords.latitude +
@@ -15,7 +17,7 @@ function initMap() {
       x.innerHTML = "Geolocation is not supported by this browser.";
   }
   // Create a map object and specify the DOM element for display.
-  var myLatlng = new google.maps.LatLng(47.7169265, -122.10184980000001);
+  var myLatlng = new google.maps.LatLng(47.6811394, -122.136389999999991);
 
   var mapOptions = {
     zoom: 15,
@@ -33,3 +35,11 @@ marker.setMap(map);
 }
 
 initMap();
+
+$.get('/busStopData', function (data) {
+  var parsedData = JSON.parse(data);
+  for (var i = 0; i < parsedData.data.list.length; i++){
+    busStopLocations.push(parsedData.data.list[i]);
+  }
+  console.log(busStopLocations);
+});
