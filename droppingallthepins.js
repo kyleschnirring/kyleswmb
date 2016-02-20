@@ -3,12 +3,17 @@
 var x = document.getElementById("demo");
 
 var busStopObjects = [];
+var busses = [];
 
 $.get('/busStopData', function (data) {
   var parsedData = JSON.parse(data);
   for (var i = 0; i < parsedData.data.list.length; i++){
     busStopObjects.push(parsedData.data.list[i]);
   }
+  for (var i = 0; i < parsedData.data.references.routes.length; i++){
+    busses.push(parsedData.data.references.routes[0]);
+  }
+  console.log(busses);
 });
 
 function showPosition(position) {
@@ -24,12 +29,12 @@ function dropAllThePins() {
   }
 
   var mapOptions = {
-      center: new google.maps.LatLng(47.6811394, -122.136389999999991),
+      center: new google.maps.LatLng(47.62329640000001, -122.33595020000001),
       zoom: 15,
       mapTypeControl: false,
-      panControl: false,
+      panControl: true,
       streetViewControl: false,
-      zoomControl: false,
+      zoomControl: true,
       disableDoubleClickZoom: true,
   };
   var map = new google.maps.Map(document.getElementById('map'),
@@ -63,20 +68,32 @@ function dropAllThePins() {
     content: contentString
   });
 
-  //var marker;
+  var markers = new Array();
 
   for (var i = 0; i < busStopObjects.length; i++) {
     var marker = new google.maps.Marker({
       position: new google.maps.LatLng(busStopObjects[i].lat, busStopObjects[i].lon),
       map: map
     });
-    marker.addListener('click', function() {
+
+    markers.push(marker);
+
+    google.maps.event.addListener(marker, 'click', (function(marker, i) {
+        return function() {
+          infowindow.setContent('<div><strong>' + busStopObjects[i].name + '</strong><br>' +
+          'Route ID: ' + busStopObjects[i].routeIds.toString());
+          infowindow.open(map, marker);
+        }
+    })(marker, i));
+
+    /*marker.addListener('click', function() {
       infowindow.open(map, marker);
-    });
+    });*/
   }
 }
 
-google.maps.event.addDomListener(window, 'load', dropAllThePins);
+ google.maps.event.addDomListener(window, 'load', dropAllThePins);
+
 /*
 function initMap() {
   if (navigator.geolocation) {
